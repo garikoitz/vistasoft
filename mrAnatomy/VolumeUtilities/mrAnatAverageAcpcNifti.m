@@ -1,6 +1,8 @@
 function [outImg] = mrAnatAverageAcpcNifti(fileNameList, outFileName, alignLandmarks, newMmPerVox, weights, bb, showFigs, clipVals)
 %
-% outImg = mrAnatAverageAcpcNifti(fileNameList, outFileName, [alignLandmarks=[]], [newMmPerVox=[1 1 1]], [weights=ones(size(fileNameList))], [bb=[-90,90; -126,90; -72,108]'], [showFigs=true], [clipVals])
+% outImg = mrAnatAverageAcpcNifti(fileNameList, outFileName, 
+% [alignLandmarks=[]], [newMmPerVox=[1 1 1]], [weights=ones(size(fileNameList))]
+% , [bb=[-90,90; -126,90; -72,108]'], [showFigs=true], [clipVals])
 %
 % fileNameList is a cell array of nifti files. It can also be a directory,
 % in which case all nifti files in that directory will be included, or it
@@ -86,7 +88,7 @@ end
 
 if (~exist('newMmPerVox','var') || isempty(newMmPerVox))
     newMmPerVox = [1 1 1];
-	mmSentIn = false;
+  mmSentIn = false;
 else
     mmSentIn = true;
 end
@@ -154,7 +156,7 @@ if(isempty(alignLandmarks))
     opt.usestretch = 1;
     opt.command = 'init';
     view_nii(h, nii, opt);
-    hstr = num2str(h);
+    hstr = num2str(h.Number);  % GLU: added .Number to make it work
     cb = ['d=getappdata(' hstr ');p=d.nii_view.imgXYZ.vox;setappdata(' hstr ',''ac'',p);set(gcbo,''String'',[''AC=['' num2str(p) '']'']);'];
     b1 = uicontrol(h, 'Style','pushbutton','Visible','on','String','Set AC','Position',[20 30 150 30],'Callback',cb);
     cb = ['d=getappdata(' hstr ');p=d.nii_view.imgXYZ.vox;setappdata(' hstr ',''pc'',p);set(gcbo,''String'',[''PC=['' num2str(p) '']'']);'];
@@ -171,6 +173,12 @@ if(isempty(alignLandmarks))
             alignLandmarks = [d.ac; d.pc; d.ms]-0.5
             % Account for the image-to-scanner xform
             %alignLandmarks = sign(ni.qto_xyz(1:3,1:3))*alignLandmarks;
+            % GLU: write the landmarks to use them to align the class file
+            % (ribbon.mgz) afterwards. 
+            path2write = fileparts(fileNameList{1});
+            disp('Will save the transformation matrix here:')
+            [path2write filesep 'xform2acpc']
+            save([path2write filesep 'xform2acpc'], 'alignLandmarks');
         end
         pause(.1);
     end
@@ -299,11 +307,11 @@ ii = 1;
 
 for(ii=1:numImages)
   if(ii==1)
-	startInd = 2; 
+  startInd = 2; 
   else
-	startInd = 1; 
-	ni = niftiRead(fileNameList{ii});
-	ni = niftiApplyCannonicalXform(ni);
+  startInd = 1; 
+  ni = niftiRead(fileNameList{ii});
+  ni = niftiApplyCannonicalXform(ni);
   end
   
   if(isempty(ni.data)) error('NIFTI file error (%s)!',fileNameList{ii}); end
@@ -323,7 +331,7 @@ for(ii=1:numImages)
     img(img<0) = 0; img(img>1) = 1;
     if(showFigs)
         o = round(newOrigin);
-    	figure; set(gcf,'Name',[ni.fname]);
+      figure; set(gcf,'Name',[ni.fname]);
         subplot(1,3,1); imagesc(flipud(squeeze(img(:,:,o(3)))')); axis image; colormap gray;
         subplot(1,3,2); imagesc(flipud(squeeze(img(:,o(2),:))')); axis image; colormap gray;
         subplot(1,3,3); imagesc(flipud(squeeze(img(o(1),:,:))')); axis image; colormap gray;
@@ -356,7 +364,10 @@ outImg = outImg-min(outImg(:));
 outImg = int16(outImg.*(32767/max(outImg(:))));
 
 disp(['writing ',outFileName,'...']);
-dtiWriteNiftiWrapper(outImg, refXform, outFileName, [], ['AVERAGE:' refDescrip]);
+% GLU: write it where it corresponds.
+path2write = fileparts(fileNameList{1});
+% dtiWriteNiftiWrapper(outImg, refXform, outFileName, [], ['AVERAGE:' refDescrip]);
+dtiWriteNiftiWrapper(outImg, refXform, [path2write filesep outFileName], [], ['AVERAGE:' refDescrip]);
 if(nargout<1)
   clear outImg;
 else 

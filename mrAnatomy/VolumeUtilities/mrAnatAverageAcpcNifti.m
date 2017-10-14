@@ -116,7 +116,7 @@ bSplineParams = [7 7 7 0 0 0];
 % We explicitly initialize the spm_defaults global here, and ensure that
 % the analyze_flip option is turned off. (Our analyze files are never
 % right-left reversed!)
-spm_defaults;
+spm_get_defaults;
 defaults.analyze.flip = 0;
 
 if(isstruct(fileNameList))

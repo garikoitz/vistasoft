@@ -101,9 +101,9 @@ if(isfield(dt6Struct,'files'))   % Test whether new dt6 stye
         end
         % look for a t1 brain mask in there too
         t1MaskName = fullfile(fileparts(t1Fname),'t1_mask.nii.gz');
-		if(~exist(t1MaskName,'file'))
-		  t1MaskName = fullfile(fileparts(t1Fname),'t1_brain_mask.nii.gz');
-		end
+        if(~exist(t1MaskName,'file'))
+          t1MaskName = fullfile(fileparts(t1Fname),'t1_brain_mask.nii.gz');
+        end
         if(exist(t1MaskName,'file'))
             ni = niftiRead(t1MaskName);
             t1.brainMask = ni.data;

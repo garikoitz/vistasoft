@@ -138,7 +138,7 @@ dwParams.bvecsFile               = '';
 dwParams.bvalsFile               = '';
 dwParams.noiseCalcMethod         = 'b0';
 dwParams.outDir                  = '';
-dwParams.tensorFitting           = true;
+% dwParams.tensorFitting           = true;  % Added GLU for testing
 
 %% Varargin
 

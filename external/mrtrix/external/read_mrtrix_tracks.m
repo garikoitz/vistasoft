@@ -5,6 +5,8 @@ function tracks = read_mrtrix_tracks (filename)
 % returns a structure containing the header information and data for the MRtrix 
 % format image 'filename' (i.e. files with the extension '.mif' or '.mih').
 
+
+
 image.comments = {};
 
 f = fopen (filename, 'r');

@@ -211,7 +211,7 @@ clear dwRaw;
 
 
 %% XIV. Bootstrap parameters
-
+% TODO COMENTADO POR GLU
 % We'll use the non-realigned bvecs since we want to count bvecs that are
 % only a little differnt due to motion correction as 'repeats'. Also, we
 % can count a direction with just a sign-flip as a 'repeat' since it will
@@ -227,14 +227,14 @@ bs.n = dwParams.numBootStrapSamples;
                                                       
 % We still need an over-determined tensor fit to do residual bootstrap.
 % We'll skip the bootstrap for datasets with fewer than 14 measurements
-% (7 is the minimum for tensor fitting).
-if size(dwRawAligned.data,4)<14
-    if strcmpi(dwParams.fitMethod,'ls')
-        warning('mrDiffusion:bootstrap','Not enough redundancy in the data- skipping bootstrap.');
-    end
-    bs.n = 0;
-end
-bs.showProgress = false;
+% % (7 is the minimum for tensor fitting).
+% if size(dwRawAligned.data,4)<14
+%     if strcmpi(dwParams.fitMethod,'ls')
+%         warning('mrDiffusion:bootstrap','Not enough redundancy in the data- skipping bootstrap.');
+%     end
+%     bs.n = 0;
+% end
+% bs.showProgress = false;
 
 
 %% XV. Name the folder that will contain the dt6.mat file
@@ -256,57 +256,78 @@ else
 end
 
 %% XVI. Tensor Fitting
+% GLU: no quiero que haga tensor fitting
+if ~dwParams.tensorFitting
+    params  = dwParams;
+    [p,f, e] = fileparts(dwRawAligned.fname);
+    params.rawDataDir = p;
+    params.rawDataFile = f;  % data_alignedNorm_trilin_noMEC.nii
+    % We assume that the raw data file is a directory inside the 'subject'
+    % directory.
+    params.subDir = fileparts(p);
+    files.dmridir = 'dmri';
+    % ojo ahora tenemos que indicarle el brainmask. Vamos a pasarle el que
+    % ha creado ya el programa de normalizacion de datos. 
+    % /bcbl/home/public/Gari/MINI/ANALYSIS/DWI/S001/dmri/noNorm_dti90trilin/bin/wmMask.nii.gz
+    % brainMask.nii.gz
+    noNorm_dti90trilin = fullfile(params.subDir,'dmri','noNorm_dti90trilin');
+    files.brainMask = fullfile(noNorm_dti90trilin,'bin','brainMask.nii.gz');
+    files.wmMask  = fullfile(noNorm_dti90trilin,'bin','wmMask.nii.gz');
+    dt6FileName{1} = fullfile(params.dt6BaseName, 'dt6.mat');  % GLU
+    save(dt6FileName{1},'params','files');
+else
+    % Switch on the fit method. If 'ls' use dtiRawFitTensorMex. If 'rt' use
+    % dtiRawFitTensorRobust. In the future this code will support running both
+    % at the same time and getting out a dti<N>trilinrt directory
+    dt6FileName = {};
+    switch lower(dwParams.fitMethod)
+        case {'ls'}
+            dt6FileName{1} = dtiRawFitTensorMex(dwRawAligned, dwDir.alignedBvecsFile,...
+                dwDir.alignedBvalsFile, dwParams.dt6BaseName,...
+                bs,[], dwParams.fitMethod,[],[],dwParams.clobber);
 
-% Switch on the fit method. If 'ls' use dtiRawFitTensorMex. If 'rt' use
-% dtiRawFitTensorRobust. In the future this code will support running both
-% at the same time and getting out a dti<N>trilinrt directory
-dt6FileName = {};
+        case {'rt'}
+            dt6FileName{1} = dtiRawFitTensorRobust(dwRawAligned, dwDir.alignedBvecsFile,...
+                dwDir.alignedBvalsFile, dwParams.dt6BaseName,[],[],[], ... 
+                dwParams.nStep,dwParams.clobber,dwParams.noiseCalcMethod);
 
-switch lower(dwParams.fitMethod)
-    case {'ls'}
-        dt6FileName{1} = dtiRawFitTensorMex(dwRawAligned, dwDir.alignedBvecsFile,...
-            dwDir.alignedBvalsFile, dwParams.dt6BaseName,...
-            bs,[], dwParams.fitMethod,[],[],dwParams.clobber);
-        
-    case {'rt'}
-        dt6FileName{1} = dtiRawFitTensorRobust(dwRawAligned, dwDir.alignedBvecsFile,...
-            dwDir.alignedBvalsFile, dwParams.dt6BaseName,[],[],[], ... 
-            dwParams.nStep,dwParams.clobber,dwParams.noiseCalcMethod);
-
-    case {'rtls','lsrt','all','both','trilinrt'};
-        dt6FileName = ...
-            dtiInitTensorFit(dwRawAligned, dwDir, dwParams, bs);
+        case {'rtls','lsrt','all','both','trilinrt'};
+            dt6FileName = ...
+                dtiInitTensorFit(dwRawAligned, dwDir, dwParams, bs);
+    end
 end
-
 
 %% XVII. Build the dt6.files field and append it to dt6.mat
 
 % Need to handle the case where there is more than one dt6 file. 
-for dd = 1:numel(dt6FileName)
-    dtiInitDt6Files(dt6FileName{dd},dwDir,t1FileName);
-end
+% for dd = 1:numel(dt6FileName)
+% GLU
+dd = 1;
+     dtiInitDt6Files(dt6FileName{dd},dwDir,t1FileName);
+% end
 
 
 %% XIIX. Check tensors and create t1pdd.png
-
-[pddT1,tmp,mm] = dtiRawCheckTensors(fullfile(dwParams.dt6BaseName,'bin',...
-                                  'tensors.nii.gz'),t1FileName);  
-pddT1        = flipdim(permute(pddT1, [2 1 3 4]), 1);
-imSlices     = 1:2:size(pddT1, 3);
-img          = makeMontage3(pddT1, imSlices, mm(1), 0 , [], [], 0);
-imwrite(img, fullfile(dwParams.dt6BaseName, 't1pdd.png'), 'CreationTime',... 
-         now, 'Author', 'mrDiffusion from Stanford University', 'Description',...
-         'T1 with PDD overlay');
-
+% GLU: no quiero que haga tensor fitting
+if dwParams.tensorFitting
+    [pddT1,tmp,mm] = dtiRawCheckTensors(fullfile(dwParams.dt6BaseName,'bin',...
+                                      'tensors.nii.gz'),t1FileName);  
+    pddT1        = flipdim(permute(pddT1, [2 1 3 4]), 1);
+    imSlices     = 1:2:size(pddT1, 3);
+    img          = makeMontage3(pddT1, imSlices, mm(1), 0 , [], [], 0);
+    imwrite(img, fullfile(dwParams.dt6BaseName, 't1pdd.png'), 'CreationTime',... 
+             now, 'Author', 'mrDiffusion from Stanford University', 'Description',...
+             'T1 with PDD overlay');
+end
 
 %% XIX. Setup conTrack, fibers and ROIs directories and ctr options file
 
-dtiInitCtr(dwParams,dwDir);
+% dtiInitCtr(dwParams,dwDir);
 
 
 %% XX. Save out parameters, svn revision info, etc. for future reference
 
-dtiInitLog(dwParams,dwDir);
+% dtiInitLog(dwParams,dwDir);
 
 
 return

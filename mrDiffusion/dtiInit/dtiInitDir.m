@@ -17,7 +17,7 @@ function dwDir = dtiInitDir(dwRawFileName,dwParams)
 
 %% Set the suffix for the folder names
 
-dwDir.outSuffix = '_aligned';
+dwDir.outSuffix = '_alignedNorm';
 
 % In the case that we are using trilinear interpolation we use '_trilin' as
 % the suffix for the dti* folder

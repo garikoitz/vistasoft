@@ -138,6 +138,7 @@ dwParams.bvecsFile               = '';
 dwParams.bvalsFile               = '';
 dwParams.noiseCalcMethod         = 'b0';
 dwParams.outDir                  = '';
+dwParams.tensorFitting           = true;
 
 %% Varargin
 

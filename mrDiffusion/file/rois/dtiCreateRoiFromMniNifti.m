@@ -77,7 +77,8 @@ end
 
 %% Load dt6.mat
 %
-dt = dtiLoadDt6(dt6File);
+% GLU EDITED dt = dtiLoadDt6(dt6File);
+dt = load(dt6File)
 
 
 %% Compute spatial normalization

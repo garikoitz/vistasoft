@@ -1,4 +1,12 @@
-function [fdImg] = dtiComputeFiberDensityNoGUI(fiberGroups, xformImgToAcpc, imSize, normalize, fiberGroupNum, endptFlag, fgCountFlag, weightVec, weightBins)
+function [fdImg] = dtiComputeFiberDensityNoGUI(fiberGroups, ... % ok
+                                               xformImgToAcpc, ... %ok 
+                                               imSize, ...  % ok
+                                               normalize, ... % 1
+                                               fiberGroupNum, ... % []
+                                               endptFlag, ... % 1
+                                               fgCountFlag, ... % nada
+                                               weightVec, ... % nada
+                                               weightBins) % nada
 %Compute fiber density from the command line.
 %
 % [fdImg] = dtiComputeFiberDensityNoGUI(fiberGroups, xformImgToAcpc,

@@ -21,6 +21,10 @@ function [dt,t1] = dtiLoadDt6(fname, applyBrainMask)
 %
 % (c) Stanford VISTA Team
 
+% path a dt.b0 = fullfile(fileparts(baseDir),'noNorm_dti90trilin','bin','b0.nii.gz');
+% path a dt.xformToAcpc = fullfile(fileparts(baseDir),'data_alignedNorm_trilin_noMEC_acpcXform.mat'); 
+
+
 %% Initialize the variables
 dt = [];   % This is the main dt structure.
 t1 = [];

@@ -48,8 +48,15 @@ if notDefined('orient')
     orient = 'RAS';
 end
 
-cmd = ['!mri_convert --out_orientation ' orient ' -rt nearest --reslice_like ' refImg ' ' mgzIn ' ' outName];
-eval(cmd);
+
+% EDITED GLU
+fsbin = '/opt/freesurfer-5.3.0/freesurfer/bin';
+fshome = '/opt/freesurfer-5.3.0/freesurfer'; 
+cmd = [fsbin filesep 'mri_convert --out_orientation ' orient ' -rt nearest --reslice_like ' refImg ' ' mgzIn ' ' outName];
+setenv('FREESURFER_HOME', fshome);
+system(cmd);
+% cmd = ['!mri_convert --out_orientation ' orient ' -rt nearest --reslice_like ' refImg ' ' mgzIn ' ' outName];
+% eval(cmd);
 
 fprintf('%s has been saved.\n',outName);
 

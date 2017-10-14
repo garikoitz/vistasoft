@@ -4,21 +4,19 @@ function ni = niftiRead(fileName, volumesToLoad)
 %   niftiImage = niftiRead(fileName,volumesToLoad)
 %
 % Reads a NIFTI image and populates a structure that should be the
-% NIFTI 1 standard 
+% NIFTI 1 standard
 %
 % If volumesToLoad is not included in the arguments, all the data
-% are returned.
-%    volumesToLoad is empty [] returns only the header
+% are returned. If volumesToLoad is empty ([]) returns only the header
 %
 % Web Resources
 %  web('http://nifti.nimh.nih.gov/nifti-1/','-browser')
-%  mrvBrowseSVN('niftiRead.m')
 %
 % See also:  niftiCreate, niftiGetStruct
-%  
+%
 % Example:
 %  niFile = fullfile(mrvDataRootPath,'mrQ','T1_lsqnabs_SEIR_cfm.nii.gz');
-%  ni = niftiRead(niFile);  
+%  ni = niftiRead(niFile);
 %
 % Copyright, Vista Team Stanford, 2011
 
@@ -28,7 +26,7 @@ if ~exist('fileName','var') || isempty(fileName)
     % ni = niftiRead;
     ni = readFileNifti;
 elseif ischar(fileName) && exist(fileName,'file')
-    % fileName is a string and the file exists. 
+    % fileName is a string and the file exists.
     % For some reason, the volumeToLoad is not yet implemented.
     % We should just implement it here, by reading the whole
     % thing and only returning the relevant volumes.  I think
@@ -44,10 +42,16 @@ elseif ischar(fileName) && exist(fileName,'file')
         ni = readFileNifti(fileName);
     end
 else
-    error('Cannot find the file %s\n',fileName);
+    % Did the person not include the .nii.gz extensions?
+    [~,n,e] = fileparts(fileName);
+    if isempty(e), fileNameExtended = [n,'.nii.gz']; end
+    if exist('fileNameExtended', 'var') ...
+         && exist(fileNameExtended,'file')
+        ni = readFileNifti(fileNameExtended);
+    else
+        error('Cannot find the file %s or %s\n',fileName,fileNameExtended);
+    end
 end
 
-% When there is a niftiGet, this can go away.
-ni.data_type = niftiClass2DataType(class(ni.data));
 
-return
+end

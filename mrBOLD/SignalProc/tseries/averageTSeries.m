@@ -51,7 +51,7 @@ end
 
 % Set dataTYPES.scanParams so that new average scan has the same params as
 % the 1st scan on scanList.
-src = {vw.curDataType scanList(1)};
+src = {viewGet(vw, 'curDataType') scanList(1)};
 [hiddenView, newScanNum, ndataType] = initScan(hiddenView, typeName, [], src);
 %dataTYPES(ndataType).scanParams(newScanNum).annotation = annotation;
 dataTYPES(ndataType) = dtSet(dataTYPES(ndataType), 'Annotation', annotation, ...
@@ -104,7 +104,7 @@ if strcmpi('INPLANE', viewGet(vw, 'view type'))
     tSeriesAvgFull = permute(tSeriesAvgFull, [3 1 2]);
 else    
     % If it's GRAY of FLAT...
-    waitHandle = waitbar(0, 'Averaging tSeries.  Please wait...');
+    waitHandle = mrvWaitbar(0, 'Averaging tSeries.  Please wait...');
     for iSlice = sliceList(vw, scanList(1));
         % For each slice...
         % disp(['Averaging scans for slice ',  int2str(iSlice)])
@@ -125,7 +125,7 @@ else
         tSeriesAvg = tSeriesAvg ./ nValid;
         tSeriesAvg(nValid == 0) = NaN;
         tSeriesAvgFull = cat(dimNum + 1, tSeriesAvgFull, tSeriesAvg); %Combine together
-        waitbar(iSlice/nSlices);
+        mrvWaitbar(iSlice/nSlices);
     end %for
     
     close(waitHandle);

@@ -15,10 +15,23 @@
 
 % The vistadata diffusion sample data are 40-directions.  The directory
 % contains the dwi data as well as the bvals and bvecs.
-dataDir = fullfile(mrvDataRootPath,'diffusion','sampleData');
-dwi = dwiLoad(fullfile(dataDir,'raw','dwi.nii.gz'));
-cCoords = [47 54 43];  % Circular
-dCoords = [44 54 43];  % Directional
+
+% dataDir = fullfile(mrvDataRootPath,'diffusion','sampleData');
+% dwi     = dwiLoad(fullfile(dataDir,'raw','dwi.nii.gz'));
+% dwi     = dwiLoad(fullfile(dataDir,'data_aligned_trilin_noMEC.nii.gz'));
+dataDir = '/Users/gari/Documents/STANFORD_PROJECTS/dr/ANALYSIS/DWI/STRT20025/1000';
+dwi     = dwiLoad(fullfile(dataDir,'dwi_aligned_trilin_noMEC.nii.gz'));
+
+% cCoords = [47 54 43];  % Circular
+% dCoords = [44 54 43];  % Directional
+
+% MINI
+cCoords = [42 41 36]; % Selected one for the S005 MINI on the corpus callosum
+dCoords = [42 41 36]; 
+% HCP
+% cCoords = [63, 69, 57]; % Selected one for the STRT20025 HCP on the corpus callosum
+% dCoords = [63, 69, 57];
+
 
 % The dwiPlot routine enables visualization of simple objects
 % dwiPlot(dwi,'bvecs');

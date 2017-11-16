@@ -54,8 +54,8 @@ end
 uData = []; h = []; doPlot = 0;
 
 % Only make the plot if there are no output arguments
-if nargout == 0, h = mrvNewGraphWin(figTitle); doPlot = 1;end
-
+% if nargout == 0, h = mrvNewGraphWin(figTitle); doPlot = 1;end
+doPlot=1;
 % Generic parameters
 dx = 0.1;   % Spatial resolution for images
 pType = mrvParamFormat(pType);
@@ -97,8 +97,10 @@ switch pType
         % If a Q is passed in as the 2nd argument, use that tensor to plot
         % the predicted surface.
         
-        if isempty(varargin), error('ADC data required.');
-        else dDist = varargin{1};
+        if isempty(varargin)
+            error('ADC data required.');
+        else
+            dDist = varargin{1};
         end
         
         t = sprintf('dDist: ');
@@ -148,8 +150,10 @@ switch pType
         % If a Q is passed in as the 2nd argument, use that tensor to plot
         % the predicted surface.
         
-        if isempty(varargin), error('ADC data required.');
-        else adc = varargin{1};
+        if isempty(varargin)
+            error('ADC data required.');
+        else
+            adc = varargin{1};
         end
         
         t = sprintf('ADC: ');
@@ -181,6 +185,7 @@ switch pType
             set(gca, 'Projection', 'perspective');
             hold on
             t = sprintf('%s Predicted (surf) and',t);
+            
         end
         
         % The diffusion weighted bvecs
@@ -189,7 +194,9 @@ switch pType
         % Compute and plot vector of measured adcs
         adcV = diag(adc)*bvecs;
         uData.adcV = adcV;
-        uData.adcPredicted = diag(bvecs*Q*bvecs');
+        if length(varargin) > 1
+            uData.adcPredicted = diag(bvecs*Q*bvecs');
+        end
         if doPlot
             h = plot3(adcV(:,1),adcV(:,2),adcV(:,3),'o');
             set(h,'MarkerFaceColor',[0 0 1]);

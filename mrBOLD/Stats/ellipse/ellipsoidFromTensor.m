@@ -92,6 +92,8 @@ if nargout == 0
     axis equal, colormap([cmap; .25 .25 .25]), alpha(0.5)    
     camlight; lighting phong; material shiny;
     set(gca, 'Projection', 'perspective');
+    % GLU
+    view(2)
 else
     xyzData.x = x;
     xyzData.y = y;

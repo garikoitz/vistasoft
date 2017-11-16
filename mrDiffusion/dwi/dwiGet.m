@@ -457,9 +457,7 @@ switch(mrvParamFormat(param))
     otherwise
         error('Unknown parameter: "%s"\n',param);
 end
-
-end
-
+end 
 
 %% Check that coords have 3D
 function coords = coordCheck(coords)

@@ -11,10 +11,12 @@
 % Brian (c) Stanford VISTASOFT Team, 2012
 
 %% Load diffusion weighted imaging data
-
-dataDir = fullfile(mrvDataRootPath,'diffusion','sampleData');
-dwi     = dwiLoad(fullfile(dataDir,'raw','dwi.nii.gz'));
+% dataDir = fullfile(mrvDataRootPath,'diffusion','sampleData');
+% dwi     = dwiLoad(fullfile(dataDir,'raw','dwi.nii.gz'));
+dataDir = '/Users/gari/Documents/STANFORD_PROJECTS/dr/ANALYSIS/DWI/S005/1000';
+dwi     = dwiLoad(fullfile(dataDir,'data_aligned_trilin_noMEC.nii.gz'));
 bvecs   = dwiGet(dwi,'diffusion bvecs');
+bvals   = dwiGet(dwi,'diffusion bvals');
 
 
 %% Illustrate dwiPlot examples
@@ -31,9 +33,12 @@ dwiPlot(dwi,'bvecs');
 % cCoords = [47 54 43];  % Circular
 % dCoords = [44 54 43];  % Directional
 
-coords = [44 54 43];  % Directional
+% coords = [44 54 43];  % Directional
+
+coords = [42 41 36];  % Selected one for the S005 MINI on the corpus callosum
+
 ADC = dwiGet(dwi,'adc data image',coords);
-dwiPlot(dwi,'adc',ADC);
+dwiPlot(dwi,'adc', ADC);
 
 %% The ADC along with a smooth shape (peanut)
 Q   = dwiGet(dwi,'tensor image',coords);

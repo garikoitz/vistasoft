@@ -64,6 +64,9 @@ function S = dwiComputeSignal(S0, bvecs, bvals, Q)
 % Rows:  Number of bvec directions
 % Cols:  Number of coordinates
 adc = dtiADC(Q, bvecs);
+if length(S0) > 1
+    S0 = mean(S0);
+end
 S = exp(- diag(bvals) * adc) * diag(S0);
 
 end

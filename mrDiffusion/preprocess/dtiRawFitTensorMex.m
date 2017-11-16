@@ -202,7 +202,7 @@ catch
     % brain won't be displayed when we view the data.
     liberalBrainMask = dtiCleanImageMask(b0clip>0.1&all(d>0,4),10,1,0.25,50);
     % force the data to be physically plausible.
-    d(d<=0) = minD;
+stasoft    d(d<=0) = minD;
     liberalBrainMask = uint8(liberalBrainMask);
     brainMask = uint8(dtiCleanImageMask(b0clip>0.2,7));
     % make sure the display-purposes brain mask is a subset of the

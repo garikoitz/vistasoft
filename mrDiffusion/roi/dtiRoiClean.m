@@ -66,6 +66,17 @@ coords(:,3) = coords(:,3) - bb(1,3) + 1;
 coords = round(coords);
 
 %% Build an image out of the ROI coordinates.
+
+
+% GLU EDIT 
+while (~license('checkout','image_toolbox'))
+    % Wait three minutes and see if the image toolbox license is free or not
+    % But at least dont stop the whole process!
+    pause(3 * 60)  
+end
+
+
+
 % Hereafter we can work with the image processing tools.
 roiMask(sub2ind(size(roiMask), coords(:,1), coords(:,2), coords(:,3))) = 1;
 roiMask = imclose(roiMask,strel('disk',2));

@@ -37,14 +37,13 @@ dataDir = {};
 % dwi{ii}     = dwiLoad(fullfile(dataDir{ii},'dwi_aligned_trilin_noMEC.nii.gz'));
 
 % BCBL
-cd('/Users/gari/Documents/Documents - GariMBP/')
-dataDir{1} = 'STANFORD_PROJECTS/dr/ANALYSIS/DWI/S005/1000';
-dataDir{2} = 'STANFORD_PROJECTS/dr/ANALYSIS/DWI/S005/2500';
-dataDir{3} = 'STANFORD_PROJECTS/dr/ANALYSIS/DWI/S005/MS';
+dataDir{1} = '/Users/glerma/Documents/STANFORD_PROJECTS/dr/ANALYSIS/DWI/S005/1000';
+dataDir{2} = '/Users/glerma/Documents/STANFORD_PROJECTS/dr/ANALYSIS/DWI/S005/2500';
+dataDir{3} = '/Users/glerma/Documents/STANFORD_PROJECTS/dr/ANALYSIS/DWI/S005/MS';
 
 dwi      = {};
-fatrix   = {};
 dttrix   = {};
+fatrix   = {};
 for ii = [1,2,3]
     dwi{ii}     = dwiLoad(fullfile(dataDir{ii},'data_aligned_trilin_noMEC.nii.gz'));
     fatrix{ii}  = read_mrtrix(fullfile(dataDir{ii},'data_aligned_trilin_noMEC_fa.mif'));
@@ -77,7 +76,7 @@ end
 % coords = [42 41 36];  % Selected one for the S005 MINI on the corpus callosum
 % HCP
 coords = [34, 41, 40];  % Selected one for the STRT20025 HCP on the corpus callosum
-
+% in mrView = [33, 40, 39];
 
 % It is possible to pick multiple, but not for this script
 % coords = [47 54 43; 44 54 43]; % Both
@@ -98,25 +97,25 @@ for ii = [1,2,3]
 end
 
 
-figure;
+figure
 subplot(3,3,1); 
-xvector = [1:length(dSig{1}),1:length(dSig{2}),1:length(dSig{3})]';
+xvector = [1:length(dSig{1}),length(dSig{1})+1:length(dSig{2})+length(dSig{1}),1:length(dSig{3})]';
 yvector = [dSig{1}(:); dSig{2}(:); dSig{3}(:)];
 colors  = [repmat([1,0,0],length(dSig{1}),1); ... % RED
            repmat([0,1,0],length(dSig{2}),1); ... % GREEN
            repmat([0,0,1],length(dSig{3}),1)];   % BLUE
 scatter(xvector, yvector, 20, colors, 'filled');
-title('DWI values: b1000=red, b2000=green, b3000=blue')
+title('DWI values: b1000=red, b2500=green, MS=blue')
 
 
 subplot(3,3,3); 
-xvector = [1:length(dSig{1}),1:length(dSig{1}),1:length(dSig{1})]';
+xvector = [1:length(dSig{1}),length(dSig{1})+1:length(dSig{2})+length(dSig{1}),1:length(dSig{3})]';
 yvector = [ADC{1}(:); ADC{2}(:); ADC{3}(:)];
 colors  = [repmat([1,0,0],length(dSig{1}),1); ... % RED
-           repmat([0,1,0],length(dSig{1}),1); ... % GREEN
-           repmat([0,0,1],length(dSig{1}),1)];   % BLUE
+           repmat([0,1,0],length(dSig{2}),1); ... % GREEN
+           repmat([0,0,1],length(dSig{3}),1)];   % BLUE
 scatter(xvector, yvector, 20, colors, 'filled');
-title('ADC values: b1000=red, b2000=green, b3000=blue')
+title('ADC values: b1000=red, b2500=green, MS=blue')
 
 
 
@@ -219,6 +218,42 @@ subplot(1,3,3); dwiPlot(dwi{3},'adc',ADC{3},Q{3});title('b3000')
 
 % pts = diag(ADC(~b0).^0.5)*bvecs(~b0,:);
 % plot3(pts(:,1),pts(:,2),pts(:,3),'b.');  % pts or pts/b?
+
+
+%% Compare the FA from mrtrix to FA from mrdiffusion
+% All data comes from the same dwi data, which is in: dwi{ii}
+% MRTRIX: it takes the dwi{ii} files, creates dttrix{ii}, then fatrix{ii}
+% mrDiff: it takes the dwi files as well. We should be able to obtain the
+% same values or at least understand why they are different. 
+
+% First do it at the voxel level and then at the whole volume level and
+% plot all voxels
+% coords    = [34, 41, 40]; 
+dtifa(Q{1}) % 0.6936  % mrview = 0.706468  % in mrView it will be [33, 40, 39];
+fatrix{1}.data(34, 41, 40)  % 0.7065
+
+dtifa(Q{2}) %     0.5351  % mrview = 0.595318  % in mrView it will be [33, 40, 39];
+fatrix{2}.data(34, 41, 40)  % 0.5943
+
+dtifa(Q{3}) % 0.5821  % mrview =  0.676102 % in mrView it will be [33, 40, 39];
+fatrix{3}.data(34, 41, 40)  % 0.6761
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %% A comparison of the estimated and observed ADC values
 % mrvNewGraphWin;
